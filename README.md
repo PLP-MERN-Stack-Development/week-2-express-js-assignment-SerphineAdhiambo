@@ -1,63 +1,265 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=19699090&assignment_repo_type=AssignmentRepo)
-# Express.js RESTful API Assignment
 
-This assignment focuses on building a RESTful API using Express.js, implementing proper routing, middleware, and error handling.
+# 🚀 Express.js Products API
 
-## Assignment Overview
+A RESTful API built with Express.js that manages products, featuring authentication, logging, validation, search, filtering, and custom error handling.
 
-You will:
-1. Set up an Express.js server
-2. Create RESTful API routes for a product resource
-3. Implement custom middleware for logging, authentication, and validation
-4. Add comprehensive error handling
-5. Develop advanced features like filtering, pagination, and search
+---
 
-## Getting Started
+## 📦 Features
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Install dependencies:
-   ```
-   npm install
-   ```
-4. Run the server:
-   ```
-   npm start
-   ```
+- Full CRUD operations for `products`
+- Middleware: logger, API key auth, validation
+- Error handling with custom error classes
+- Query filtering, search, and pagination
+- Statistics route by category
 
-## Files Included
+---
 
-- `Week2-Assignment.md`: Detailed assignment instructions
-- `server.js`: Starter Express.js server file
-- `.env.example`: Example environment variables file
+## 🛠️ Setup Instructions
 
-## Requirements
+### 1. Clone and install dependencies
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Postman, Insomnia, or curl for API testing
+```bash
+git clone <your-repo-url>
+cd express-api
+npm install
+```
 
-## API Endpoints
+### 2. Create a `.env` file
 
-The API will have the following endpoints:
+```env
+API_KEY=your-secret-api-key
+```
 
-- `GET /api/products`: Get all products
-- `GET /api/products/:id`: Get a specific product
-- `POST /api/products`: Create a new product
-- `PUT /api/products/:id`: Update a product
-- `DELETE /api/products/:id`: Delete a product
+Refer to `.env.example`.
 
-## Submission
+### 3. Start the server
 
-Your work will be automatically submitted when you push to your GitHub Classroom repository. Make sure to:
+```bash
+node server.js
+```
 
-1. Complete all the required API endpoints
-2. Implement the middleware and error handling
-3. Document your API in the README.md
+Server runs at: `http://localhost:3000`
+
+---
+
+## 🔐 Authentication
+
+Some routes (POST, PUT, DELETE) require an API key sent in the request header:
+
+```http
+x-api-key: your-secret-api-key
+```
+
+---
+
+## 📘 API Endpoints & Documentation
+
+### ✅ GET `/api/products`
+
+Returns all products with optional filtering and pagination.
+
+**Query Params**:
+- `category` — filter by category
+- `page` — pagination page number
+- `limit` — items per page (default: 5)
+
+📤 **Example Request**:
+```http
+GET /api/products?category=Books&page=1&limit=2
+```
+
+📥 **Example Response**:
+```json
+{
+  "page": 1,
+  "limit": 2,
+  "total": 5,
+  "data": [
+    {
+      "id": 1,
+      "name": "Clean Code",
+      "description": "Software craftsmanship book",
+      "price": 35,
+      "category": "Books",
+      "inStock": true
+    }
+  ]
+}
+```
+
+---
+
+### ✅ GET `/api/products/:id`
+
+Get a specific product by ID.
+
+📤 **Request**:
+```http
+GET /api/products/1
+```
+
+📥 **Response**:
+```json
+{
+  "id": 1,
+  "name": "Clean Code",
+  "description": "Software craftsmanship book",
+  "price": 35,
+  "category": "Books",
+  "inStock": true
+}
+```
+
+---
+
+### ✅ POST `/api/products`  
+**(Requires API Key)**
+
+Create a new product.
+
+📤 **Request Body**:
+```json
+{
+  "name": "Dell XPS",
+  "description": "High-performance laptop",
+  "price": 1500,
+  "category": "Electronics",
+  "inStock": true
+}
+```
+
+📥 **Response**:
+```json
+{
+  "id": 2,
+  "name": "Dell XPS",
+  "description": "High-performance laptop",
+  "price": 1500,
+  "category": "Electronics",
+  "inStock": true
+}
+```
+
+---
+
+### ✅ PUT `/api/products/:id`  
+**(Requires API Key)**
+
+Update an existing product.
+
+📤 **Request**:
+```http
+PUT /api/products/2
+```
+
+```json
+{
+  "price": 1450,
+  "inStock": false
+}
+```
+
+📥 **Response**:
+```json
+{
+  "id": 2,
+  "name": "Dell XPS",
+  "description": "High-performance laptop",
+  "price": 1450,
+  "category": "Electronics",
+  "inStock": false
+}
+```
+
+---
+
+### ✅ DELETE `/api/products/:id`  
+**(Requires API Key)**
+
+Delete a product by ID.
+
+📤 **Request**:
+```http
+DELETE /api/products/2
+```
+
+📥 **Response**:
+```json
+{
+  "message": "Deleted successfully",
+  "product": {
+    "id": 2,
+    "name": "Dell XPS",
+    "description": "High-performance laptop",
+    "price": 1450,
+    "category": "Electronics",
+    "inStock": false
+  }
+}
+```
+
+---
+
+### ✅ GET `/api/products/search?name=`
+
+Search for products by name.
+
+📤 **Request**:
+```http
+GET /api/products/search?name=code
+```
+
+📥 **Response**:
+```json
+[
+  {
+    "id": 1,
+    "name": "Clean Code",
+    "description": "Software craftsmanship book",
+    "price": 35,
+    "category": "Books",
+    "inStock": true
+  }
+]
+```
+
+---
+
+### ✅ GET `/api/products/stats`
+
+Returns a count of products grouped by category.
+
+📥 **Response**:
+```json
+{
+  "Books": 2,
+  "Electronics": 1
+}
+```
+
+---
+
+## 🧪 Sample Test Using curl
+
+```bash
+curl -X POST http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your-secret-api-key" \
+  -d '{
+    "name": "Node.js Guide",
+    "description": "Book for backend development",
+    "price": 25,
+    "category": "Books",
+    "inStock": true
+  }'
+```
+
+---
+
+## 📝 Author
+
+Serphne Adhiambo   
+Built with ❤️ using Node.js and Express.js
 4. Include examples of requests and responses
-
-## Resources
-
-- [Express.js Documentation](https://expressjs.com/)
-- [RESTful API Design Best Practices](https://restfulapi.net/)
-- [HTTP Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) 
